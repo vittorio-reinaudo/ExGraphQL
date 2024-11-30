@@ -31,7 +31,7 @@ defmodule ExGraphQL.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
-      {:tesla, "~> 1.4"},
+      {:httpoison, "~> 2.2"},
       {:jason, "~> 1.3"}
     ]
   end
