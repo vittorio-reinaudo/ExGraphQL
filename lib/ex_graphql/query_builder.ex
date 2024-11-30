@@ -29,7 +29,7 @@ defmodule ExGraphQL.QueryBuilder do
   @doc """
   Recursively process fields, supporting infinite levels of nesting
   """
-  def process_fields(object_module, depth \\ 0, max_depth \\ 5) do
+  defp process_fields(object_module, depth \\ 0, max_depth \\ 5) do
     # Prevent infinite recursion
     if depth >= max_depth do
       ""
@@ -62,7 +62,7 @@ defmodule ExGraphQL.QueryBuilder do
   @doc """
   Build filter string with support for deep nesting
   """
-  def build_filter_string(filters, depth \\ 0, max_depth \\ 5) do
+  defp build_filter_string(filters, depth \\ 0, max_depth \\ 5) do
     # Prevent excessive nesting
     if depth >= max_depth do
       ""
@@ -131,17 +131,15 @@ defmodule ExGraphQL.QueryBuilder do
   @doc """
   Build variables for deeply nested queries
   """
-  def build_variables(filters) do
+  defp build_variables(filters) do
     flatten_variables(filters)
     |> Enum.into(%{})
   end
 
-  # Recursively flatten nested variables
   defp flatten_variables(filters, prefix \\ "") do
     Enum.flat_map(filters, fn
       {field, conditions} when is_list(conditions) ->
         if Keyword.keyword?(conditions) do
-          # Handle nested conditions
           nested_vars =
             Enum.flat_map(conditions, fn
               {nested_field, nested_conditions} when is_list(nested_conditions) ->
@@ -154,9 +152,8 @@ defmodule ExGraphQL.QueryBuilder do
 
           # Handle direct filter conditions
           direct_vars =
-            Enum.filter_map(
-              conditions,
-              fn {k, _} -> not is_list(Keyword.get(conditions, k, [])) end,
+            Enum.filter(conditions, fn {k, _} -> not is_list(Keyword.get(conditions, k, [])) end)
+            |> Enum.map(
               fn {k, v} ->
                 key = if prefix == "", do: "#{field}_#{k}", else: "#{prefix}_#{field}_#{k}"
                 {key, v}

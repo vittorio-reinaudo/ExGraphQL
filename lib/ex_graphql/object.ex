@@ -7,17 +7,11 @@ defmodule ExGraphQL.Object do
 
   defmacro gql_field(name, type, opts \\ []) do
     quote do
-      IO.inspect(unquote(__MODULE__), label: "Current module")
-      IO.inspect({:adding_field, unquote(name), unquote(type), unquote(opts)})
       Module.put_attribute(unquote(__CALLER__.module), :graphql_fields, {unquote(name), unquote(type), unquote(opts)})
-#      @graphql_fields {unquote(name), unquote(type), unquote(opts)}
     end
   end
 
   defmacro __using__(_opts) do
-    IO.puts("Using ExGraphQL.Object in #{__MODULE__}")
-    IO.inspect("ExGraphQL.Object is being used in #{__CALLER__.module}")
-
     quote do
       @before_compile unquote(__MODULE__)
       import unquote(__MODULE__), only: [gql_field: 2, gql_field: 3]

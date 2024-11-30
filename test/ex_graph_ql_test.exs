@@ -3,7 +3,6 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
   doctest ExGraphQL.QueryBuilder
 
   alias ExGraphQL.QueryBuilder
-  alias ExGraphQL.Test.{Issue, User, Team, Organization}
 
   test "build query with multiple levels of nesting" do
     query = QueryBuilder.build_query(Issue)
@@ -62,3 +61,38 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
   end
 
 end
+
+defmodule User do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:name, :string)
+  gql_field(:email, :string)
+  gql_field(:team, Team)
+end
+
+defmodule Team do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:name, :string)
+  gql_field(:organization, Organization)
+end
+
+defmodule Organization do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:name, :string)
+  gql_field(:country, :string)
+end
+
+defmodule Issue do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:title, :string)
+  gql_field(:description, :string)
+  gql_field(:assignee, User)
+end
+

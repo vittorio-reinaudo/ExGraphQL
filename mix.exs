@@ -10,7 +10,14 @@ defmodule ExGraphQL.MixProject do
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       package: package(),
-      deps: deps()
+      deps: deps(),
+      docs: [
+        main: "overview",
+        extra_section: "GUIDES",
+        formatters: ["html", "epub"],
+        groups_for_modules: groups_for_modules(),
+        extras: extras()
+      ],
     ]
   end
 
@@ -23,6 +30,7 @@ defmodule ExGraphQL.MixProject do
 
   defp deps do
     [
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.3"}
     ]
@@ -38,6 +46,23 @@ defmodule ExGraphQL.MixProject do
       links: %{
         GitHub: @source_url
       }
+    ]
+  end
+
+  defp groups_for_modules do
+    [
+      "Base Concept": [
+        ExGraphQL.Object,
+        ExGraphQL.QueryBuilder,
+        ExGraphQL.Client,
+      ],
+    ]
+  end
+
+  defp extras do
+    [
+      "guides/overview.md",
+      "guides/installation.md"
     ]
   end
 end
