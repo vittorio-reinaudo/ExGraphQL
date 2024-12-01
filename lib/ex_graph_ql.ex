@@ -1,12 +1,6 @@
 defmodule ExGraphQL do
   alias ExGraphQL.{Object, QueryBuilder, Client}
 
-#  defmacro __using__(_) do
-#    quote do
-#      use ExGraphQL.Object
-#    end
-#  end
-
   def query(module, filters \\ []) do
     object_name =
       module
