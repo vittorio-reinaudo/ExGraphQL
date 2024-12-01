@@ -47,6 +47,33 @@ defmodule MyApp.GQLObject.Team do
 end
 ```
 
+## Make your first query
+
+```elixir
+defmodule MyApp.GraphAPI do
+  base_url = "https://api.graph-provider/graphql"
+  token = System.get_env("graph_api_token", "")
+  query = ExGraphQL.QueryBuilder.build_query(MyApp.Object.Team)
+  ExGraphQL.Client.execute(base_url, token, query)
+end
+```
+
+## Add filter to your query
+
+```elixir
+defmodule MyApp.GraphAPI do
+  base_url = "https://api.graph-provider/graphql"
+  token = System.get_env("graph_api_token", "")
+  query = ExGraphQL.QueryBuilder.build_query(MyApp.Object.Team, 
+    name: [eq: "my-team"],
+    organization: [
+      country: [contains: "ita"]
+    ]
+  )
+  ExGraphQL.Client.execute(base_url, token, query)
+end
+```
+
 ## Contribute
 
 To contribute to the repository, please submit a pull request to the [ExGraphQL](https://github.com/vittorio-reinaudo/ex-graphql) project on GitHub.
