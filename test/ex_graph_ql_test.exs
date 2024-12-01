@@ -11,10 +11,12 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
       """
       query {
         issue {
-          id title description assignee {
-            id name email team {
-              id name organization {
-                id name country
+          nodes {
+            id title description assignee {
+              id name email team {
+                id name organization {
+                  id name country
+                }
               }
             }
           }
@@ -28,7 +30,8 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
 
   test "build query with deep nested filters" do
     query =
-      QueryBuilder.build_query(Issue,
+      QueryBuilder.build_query(
+        Issue,
         title: [contains: "Bug"],
         assignee: [
           name: [starts_with: "John"],
@@ -44,11 +47,13 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
     expected_query =
       """
       query {
-        issue(title: { contains: "Bug"}, assignee: { name: { startsWith: "John"}, team: { name: { eq: "Engineering"}, organization: { country: { eq: "USA"} } } }) {
-          id title description assignee {
-            id name email team {
-              id name organization {
-                id name country
+        issue( filter : { title: { contains: "Bug"}, assignee: { name: { startsWith: "John"}, team: { name: { eq: "Engineering"}, organization: { country: { eq: "USA"} } } } }) {
+          nodes {
+            id title description assignee {
+              id name email team {
+                id name organization {
+                  id name country
+                }
               }
             }
           }

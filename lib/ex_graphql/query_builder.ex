@@ -7,7 +7,7 @@ defmodule ExGraphQL.QueryBuilder do
     query_name = object_module |> Module.split() |> List.last() |> Macro.underscore()
 
     field_strings = process_fields(object_module)
-    filter_string = build_filter_string(filters) |> add_filter_bracket()
+    filter_string = build_filter_string(filters) |> add_filter_border()
 
     operation =
       case operation_type do
@@ -19,7 +19,7 @@ defmodule ExGraphQL.QueryBuilder do
     """
     #{operation} {
       #{query_name}#{filter_string} {
-        #{field_strings}
+        nodes { #{field_strings} }
       }
     }
     """
@@ -125,8 +125,8 @@ defmodule ExGraphQL.QueryBuilder do
   defp format_value(value) when is_boolean(value), do: "#{value}"
   defp format_value(_), do: nil
 
-  defp add_filter_bracket(""), do: ""
-  defp add_filter_bracket(filters), do: "( #{filters} )"
+  defp add_filter_border(""), do: ""
+  defp add_filter_border(filters), do: "( filter: { #{filters} } )"
 
   @doc """
   Build variables for deeply nested queries
