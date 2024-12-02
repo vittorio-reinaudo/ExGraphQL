@@ -15,7 +15,7 @@ defmodule ExGraphQL.Client do
 
     case HTTPoison.post(url, Jason.encode!(%{query: query}), headers) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, Jason.decode!(body)["data"]["issues"]["nodes"]}
+        {:ok, Jason.decode!(body)["data"]}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}

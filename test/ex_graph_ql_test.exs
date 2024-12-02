@@ -10,15 +10,21 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
     expected_query =
       """
       query {
-        issue {
+        issue(first: 10) {
           nodes {
             id title description assignee {
               id name email team {
-                id name organization {
-                  id name country
+                nodes {
+                  id name organization {
+                    id name country
+                  }
                 }
               }
             }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
@@ -32,30 +38,44 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
     query =
       QueryBuilder.build_query(
         Issue,
-        title: [contains: "Bug"],
-        assignee: [
-          name: [starts_with: "John"],
-          team: [
-            name: [eq: "Engineering"],
-            organization: [
-              country: [eq: "USA"]
+        filters: [
+          title: [contains: "Bug"],
+          assignee: [
+            name: [starts_with: "John"],
+            team: [
+              name: [eq: "Engineering"],
+              organization: [
+                country: [eq: "USA"]
+              ]
             ]
           ]
-        ]
+        ],
+        limit: 100,
+        order_by: "createdAt"
       )
 
     expected_query =
       """
       query {
-        issue( filter : { title: { contains: "Bug"}, assignee: { name: { startsWith: "John"}, team: { name: { eq: "Engineering"}, organization: { country: { eq: "USA"} } } } }) {
+        issue(
+          filter : { title: { contains: "Bug"}, assignee: { name: { startsWith: "John"}, team: { name: { eq: "Engineering"}, organization: { country: { eq: "USA"} } } } }
+          first: 100
+          orderBy: createdAt
+        ) {
           nodes {
             id title description assignee {
               id name email team {
-                id name organization {
-                  id name country
+                nodes {
+                  id name organization {
+                    id name country
+                  }
                 }
               }
             }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
@@ -66,6 +86,14 @@ defmodule ExGraphQL.NestedQueryBuilderTest do
   end
 
 end
+defmodule Issue do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:title, :string)
+  gql_field(:description, :string)
+  gql_field(:assignee, User)
+end
 
 defmodule User do
   use ExGraphQL.Object
@@ -73,7 +101,7 @@ defmodule User do
   gql_field(:id, :integer)
   gql_field(:name, :string)
   gql_field(:email, :string)
-  gql_field(:team, Team)
+  gql_field(:team, Team, [multiple_link: true])
 end
 
 defmodule Team do
@@ -90,14 +118,5 @@ defmodule Organization do
   gql_field(:id, :integer)
   gql_field(:name, :string)
   gql_field(:country, :string)
-end
-
-defmodule Issue do
-  use ExGraphQL.Object
-
-  gql_field(:id, :integer)
-  gql_field(:title, :string)
-  gql_field(:description, :string)
-  gql_field(:assignee, User)
 end
 
