@@ -23,9 +23,18 @@ defmodule MyApp.GQLObject.Organization do
   gql_field(:name, :string)
   gql_field(:country, :string)
 end
+
+defmodule MyApp.GQLObject.Member do
+  use ExGraphQL.Object
+
+  gql_field(:id, :integer)
+  gql_field(:name, :string)
+end
 ```
 
 ## Declare a nested object
+
+If the object nested are in relation 1:N use `opts` to declare `multiple_link: true`
 ```elixir
 defmodule MyApp.GQLObject.Team do
   use ExGraphQL.Object
@@ -33,6 +42,7 @@ defmodule MyApp.GQLObject.Team do
   gql_field(:id, :integer)
   gql_field(:name, :string)
   gql_field(:organization, MyApp.GQLObject.Organization)
+  gql_field(:organization, MyApp.GQLObject.Member, multiple_link: true)
 end
 ```
 
@@ -54,9 +64,11 @@ defmodule MyApp.GraphAPI do
   base_url = "https://api.graph-provider/graphql"
   token = System.get_env("graph_api_token", "")
   query = ExGraphQL.QueryBuilder.build_query(MyApp.Object.Team, 
-    name: [eq: "my-team"],
-    organization: [
-      country: [contains: "ita"]
+    filter: [
+      name: [eq: "my-team"],
+        organization: [
+          country: [contains: "ita"]
+      ]
     ]
   )
   ExGraphQL.Client.execute(base_url, token, query)
