@@ -75,7 +75,7 @@ defmodule MyApp.GraphAPI do
   base_url = "https://api.graph-provider/graphql"
   token = System.get_env("graph_api_token", "")
   query = ExGraphQL.QueryBuilder.build_query(MyApp.Object.Team, 
-    filter: [
+    filters: [
       name: [eq: "my-team"],
         organization: [
           country: [contains: "ita"]

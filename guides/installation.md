@@ -42,7 +42,7 @@ defmodule MyApp.GQLObject.Team do
   gql_field(:id, :integer)
   gql_field(:name, :string)
   gql_field(:organization, MyApp.GQLObject.Organization)
-  gql_field(:organization, MyApp.GQLObject.Member, multiple_link: true)
+  gql_field(:members, MyApp.GQLObject.Member, multiple_link: true)
 end
 ```
 
@@ -64,7 +64,7 @@ defmodule MyApp.GraphAPI do
   base_url = "https://api.graph-provider/graphql"
   token = System.get_env("graph_api_token", "")
   query = ExGraphQL.QueryBuilder.build_query(MyApp.Object.Team, 
-    filter: [
+    filters: [
       name: [eq: "my-team"],
         organization: [
           country: [contains: "ita"]
