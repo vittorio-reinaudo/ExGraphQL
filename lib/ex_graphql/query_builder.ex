@@ -3,6 +3,20 @@ defmodule ExGraphQL.QueryBuilder do
   Advanced GraphQL query builder supporting infinite levels of nested objects
   """
 
+  def get_by_id(object_module, id) do
+    query_name = object_module |> Module.split() |> List.last() |> Macro.underscore()
+    field_strings = process_fields(object_module)
+
+    """
+    query {
+      #{query_name}(id: "#{id}") {
+         #{field_strings}
+      }
+    }
+    """
+    |> String.trim()
+  end
+
   def build_query(object_module, opts \\ []) do
     filters = Keyword.get(opts, :filters, [])
     operation_type = Keyword.get(opts, :operation_type, :query)
